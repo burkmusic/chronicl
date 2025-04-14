@@ -26,19 +26,22 @@ export default function Home() {
               <Input
                 type="text"
                 placeholder="Enter your repository url..."
-                className="w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400"
+                className={`w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                disabled={isGenerating}
               />
             </div>
             <div className="flex gap-2">
               <Input
                 type="text"
                 placeholder="From commit..."
-                className="w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400"
+                className={`w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                disabled={isGenerating}
               />
               <Input
                 type="text"
                 placeholder="To commit..."
-                className="w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400"
+                className={`w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                disabled={isGenerating}
               />
               <Button 
                 className={`h-12 px-6 text-white ${
