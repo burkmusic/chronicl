@@ -9,6 +9,7 @@ import { useState } from "react";
 import { GitHubClient, RepositoryInfo } from "@/lib/github/githubClient";
 import { StarryBackground } from "@/components/ui/starry-background";
 import { ChangelogSummary } from "@/lib/ai/changelogService";
+import ReactMarkdown from 'react-markdown';
 
 export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -164,7 +165,7 @@ export default function Home() {
           <div className={`transition-all duration-700 ease-in-out ${isGenerating ? 'w-1/2 opacity-100' : 'w-0 opacity-0'} px-4 py-8 flex flex-col justify-center`}>
             <Card className="h-full bg-slate-900 border-slate-700 text-slate-100">
               <CardHeader>
-                <CardTitle className="text-2xl">Generated Changelog</CardTitle>
+                <CardTitle className="text-2xl">Changelog</CardTitle>
                 {changelog && (
                   <div className="text-sm text-slate-400">
                     Version {changelog.version} - {new Date(changelog.date).toLocaleDateString()}
@@ -177,23 +178,31 @@ export default function Home() {
               <CardContent>
                 {changelog ? (
                   <div className="space-y-6">
-                    {['feature', 'fix', 'improvement', 'breaking', 'other'].map((type) => {
-                      const entries = changelog.entries.filter(entry => entry.type === type);
-                      if (entries.length === 0) return null;
+                    {changelog.entries.length === 1 && changelog.entries[0].type === 'other' ? (
+                      // Display markdown content for AI-generated changelog
+                      <div className="prose prose-invert max-w-none prose-headings:text-slate-100 prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-li:text-slate-200">
+                        <ReactMarkdown>{changelog.entries[0].description}</ReactMarkdown>
+                      </div>
+                    ) : (
+                      // Display categorized entries for simple changelog
+                      ['feature', 'fix', 'improvement', 'breaking', 'other'].map((type) => {
+                        const entries = changelog.entries.filter(entry => entry.type === type);
+                        if (entries.length === 0) return null;
 
-                      return (
-                        <div key={type} className="space-y-2">
-                          <h3 className="text-lg font-semibold capitalize text-purple-400">{type}s</h3>
-                          <ul className="space-y-2">
-                            {entries.map((entry, index) => (
-                              <li key={index} className="text-slate-200">
-                                {entry.description}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      );
-                    })}
+                        return (
+                          <div key={type} className="space-y-2">
+                            <h3 className="text-lg font-semibold capitalize text-purple-400">{type}s</h3>
+                            <ul className="space-y-2">
+                              {entries.map((entry, index) => (
+                                <li key={index} className="text-slate-200">
+                                  {entry.description}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        );
+                      })
+                    )}
                   </div>
                 ) : (
                   <div className="animate-pulse">

@@ -61,19 +61,39 @@ export class OpenAIService {
         messages: [
           {
             role: "system",
-            content: `You are a changelog generator. Analyze the following commit messages and categorize them into a structured changelog.
-            For each commit, determine if it's a feature, fix, improvement, breaking change, or other.
-            Group related commits together and provide a concise summary for each group.
-            Format your response as a JSON object with the following structure:
-            {
-              "entries": [
-                {
-                  "type": "feature|fix|improvement|breaking|other",
-                  "description": "A concise summary of the changes",
-                  "relatedCommits": ["sha1", "sha2"]
-                }
-              ]
-            }`
+            content: `You are a changelog generator. Analyze the following commit messages and create a traditional changelog.
+            
+            Format your response as a markdown document with the following structure:
+            
+            # Changelog - Version ${version}
+            
+            ## Changes
+            
+            * [Concise summary of changes, grouped by type if possible]
+            * [Another change]
+            * [And so on...]
+            
+            IMPORTANT FORMATTING RULES:
+            1. Use a single # for the main title (Changelog - Version ${version})
+            2. Use ## for the "Changes" section heading
+            3. EVERY change MUST start with an asterisk (*) to create a bullet point
+            4. Group related changes under subheadings if needed, using ### for subheadings
+            5. Make the summaries clear, concise, and user-friendly
+            6. Focus on what changed from the user's perspective, not technical details
+            
+            Example format:
+            # Version ${version}
+                        
+            ### User Interface
+            
+            * Added new navigation menu
+            * Improved button styling
+            
+            ### Bug Fixes
+            
+            * Fixed login issue
+            * Resolved data loading error
+            `
           },
           {
             role: "user",
@@ -90,18 +110,21 @@ export class OpenAIService {
         throw new Error('No response from OpenAI');
       }
 
-      // Extract JSON from the response
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) {
-        throw new Error('Invalid response format from OpenAI');
-      }
-
-      const aiResult = JSON.parse(jsonMatch[0]);
+      // Extract the markdown content
+      const markdownContent = content.trim();
+      
+      // Convert the markdown content to our ChangelogSummary format
+      // For now, we'll create a simple entry with the entire markdown content
+      const entries: ChangelogEntry[] = [{
+        type: 'other',
+        description: markdownContent,
+        relatedCommits: commits.map(commit => commit.sha)
+      }];
 
       return {
         version,
         date: date.toISOString(),
-        entries: aiResult.entries || [],
+        entries,
         aiGenerated: true
       };
     } catch (error: any) {
