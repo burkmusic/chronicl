@@ -3,6 +3,7 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { InfoButton } from "@/components/ui/info-button";
 import { useState } from "react";
 import { GitHubClient, RepositoryInfo } from "@/lib/github/githubClient";
 
@@ -11,6 +12,7 @@ export default function Home() {
   const [repoUrl, setRepoUrl] = useState("");
   const [fromCommit, setFromCommit] = useState("");
   const [toCommit, setToCommit] = useState("");
+  const [authToken, setAuthToken] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [commits, setCommits] = useState<any[]>([]);
 
@@ -22,8 +24,8 @@ export default function Home() {
       // Parse repository URL
       const repoInfo = GitHubClient.parseRepositoryUrl(repoUrl);
 
-      // Get GitHub client instance
-      const githubClient = GitHubClient.getInstance();
+      // Get GitHub client instance with optional auth token
+      const githubClient = GitHubClient.getInstance(authToken || undefined);
 
       // Fetch commits (this will also validate the commits)
       const commitData = await githubClient.getCommitsBetween(
@@ -60,32 +62,62 @@ export default function Home() {
           </main>
           <div className="max-w-4xl w-full mx-auto px-4 flex flex-col gap-4 -mt-8">
             <div className="flex gap-2">
-              <Input
-                type="text"
-                placeholder="Enter your repository url..."
-                className={`w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
-                disabled={isGenerating}
-                value={repoUrl}
-                onChange={(e) => setRepoUrl(e.target.value)}
-              />
+              <div className="relative flex-1">
+                <Input
+                  type="text"
+                  placeholder="Enter your repository url..."
+                  className={`w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={isGenerating}
+                  value={repoUrl}
+                  onChange={(e) => setRepoUrl(e.target.value)}
+                />
+                <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                  <InfoButton content="Enter the full GitHub repository URL (e.g., https://github.com/owner/repo)" />
+                </div>
+              </div>
             </div>
             <div className="flex gap-2">
-              <Input
-                type="text"
-                placeholder="From commit..."
-                className={`w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
-                disabled={isGenerating}
-                value={fromCommit}
-                onChange={(e) => setFromCommit(e.target.value)}
-              />
-              <Input
-                type="text"
-                placeholder="To commit..."
-                className={`w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
-                disabled={isGenerating}
-                value={toCommit}
-                onChange={(e) => setToCommit(e.target.value)}
-              />
+              <div className="relative flex-1">
+                <Input
+                  type="text"
+                  placeholder="From commit..."
+                  className={`w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={isGenerating}
+                  value={fromCommit}
+                  onChange={(e) => setFromCommit(e.target.value)}
+                />
+                <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                  <InfoButton content="Enter the starting commit SHA or branch name (e.g., main, develop, or a commit hash)" />
+                </div>
+              </div>
+              <div className="relative flex-1">
+                <Input
+                  type="text"
+                  placeholder="To commit..."
+                  className={`w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={isGenerating}
+                  value={toCommit}
+                  onChange={(e) => setToCommit(e.target.value)}
+                />
+                <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                  <InfoButton content="Enter the ending commit SHA or branch name (e.g., main, develop, or a commit hash)" />
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Input
+                  type="password"
+                  placeholder="GitHub Personal Access Token (optional)"
+                  className={`w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={isGenerating}
+                  value={authToken}
+                  onChange={(e) => setAuthToken(e.target.value)}
+                />
+                <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                  <InfoButton content="Optional: Add a GitHub Fine-grained Personal Access Token to increase the rate limit to 5,000 requests per hour. Required for private repositories." />
+                </div>
+              </div>
               <Button 
                 className={`h-12 px-6 text-white ${
                   isGenerating 

@@ -21,15 +21,15 @@ export class GitHubClient {
   private octokit: Octokit;
   private static instance: GitHubClient;
 
-  private constructor() {
-    // Create Octokit instance without authentication for public repos only
-    this.octokit = new Octokit();
+  private constructor(authToken?: string) {
+    // Create Octokit instance with optional authentication
+    this.octokit = new Octokit(authToken ? { auth: authToken } : undefined);
   }
 
   // Singleton pattern to reuse the same Octokit instance
-  public static getInstance(): GitHubClient {
-    if (!GitHubClient.instance) {
-      GitHubClient.instance = new GitHubClient();
+  public static getInstance(authToken?: string): GitHubClient {
+    if (!GitHubClient.instance || authToken) {
+      GitHubClient.instance = new GitHubClient(authToken);
     }
     return GitHubClient.instance;
   }
