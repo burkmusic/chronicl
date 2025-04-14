@@ -2,7 +2,6 @@ import * as React from "react"
 import * as TooltipPrimitive from "@radix-ui/react-tooltip"
 import { cn } from "@/lib/utils"
 
-const TooltipProvider = TooltipPrimitive.Provider
 const Tooltip = TooltipPrimitive.Root
 const TooltipTrigger = TooltipPrimitive.Trigger
 const TooltipContent = React.forwardRef<
@@ -28,22 +27,20 @@ interface InfoButtonProps {
 
 export function InfoButton({ content, className }: InfoButtonProps) {
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <button
-            className={cn(
-              "flex h-6 w-6 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-xs text-slate-400 hover:bg-slate-800 hover:text-slate-300 transition-colors",
-              className
-            )}
-          >
-            i
-          </button>
-        </TooltipTrigger>
-        <TooltipContent>
-          {content}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip delayDuration={100}>
+      <TooltipTrigger asChild>
+        <button
+          className={cn(
+            "flex h-6 w-6 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-xs text-slate-400 hover:bg-slate-800 hover:text-slate-300 transition-colors",
+            className
+          )}
+        >
+          i
+        </button>
+      </TooltipTrigger>
+      <TooltipContent>
+        {content}
+      </TooltipContent>
+    </Tooltip>
   )
 } 
