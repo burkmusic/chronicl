@@ -7,6 +7,7 @@ import { InfoButton } from "@/components/ui/info-button";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { useState } from "react";
 import { GitHubClient, RepositoryInfo } from "@/lib/github/githubClient";
+import { StarryBackground } from "@/components/ui/starry-background";
 
 export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -63,15 +64,16 @@ export default function Home() {
 
   return (
     <TooltipPrimitive.Provider>
-      <div className="min-h-screen flex items-center justify-center bg-slate-950 overflow-hidden">
-        <div className="w-full flex transition-all duration-700 ease-in-out relative h-screen">
+      <div className="min-h-screen flex items-center justify-center overflow-hidden relative">
+        <StarryBackground />
+        <div className="w-full flex transition-all duration-700 ease-in-out relative h-screen z-10">
           {/* Left side - Original UI */}
-          <div className={`transition-all duration-700 ease-in-out transform ${isGenerating ? 'w-1/2 translate-x-0' : 'w-full translate-x-0'} flex flex-col justify-center`}>
+          <div className={`transition-all duration-700 ease-in-out transform ${isGenerating ? 'w-1/2 translate-x-0' : 'w-full translate-x-0'} flex flex-col justify-center bg-slate-950/30`}>
             <main className="max-w-3xl mx-auto px-4 py-8 text-center">
-              <h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+              <h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent drop-shadow-lg">
                 Chronicl
               </h1>
-              <p className="text-xl text-slate-300 mb-8">
+              <p className="text-xl text-slate-200 mb-8 drop-shadow-md">
                 AI generated Github changelogs
               </p>
             </main>
