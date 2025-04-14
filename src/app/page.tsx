@@ -12,15 +12,29 @@ export default function Home() {
           AI generated Github changelogs
         </p>
       </main>
-      <div className="max-w-4xl w-full mx-auto px-4 flex gap-2 -mt-8">
-        <Input
-          type="text"
-          placeholder="Enter your repository name..."
-          className="w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400"
-        />
-        <Button className="h-12 px-6 bg-gradient-to-r from-purple-400 to-blue-400 hover:from-purple-500 hover:to-blue-500 text-white">
-          Generate
-        </Button>
+      <div className="max-w-4xl w-full mx-auto px-4 flex flex-col gap-4 -mt-8">
+        <div className="flex gap-2">
+          <Input
+            type="text"
+            placeholder="Enter your repository url..."
+            className="w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400"
+          />
+        </div>
+        <div className="flex gap-2">
+          <Input
+            type="text"
+            placeholder="From commit..."
+            className="w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400"
+          />
+          <Input
+            type="text"
+            placeholder="To commit..."
+            className="w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400"
+          />
+          <Button className="h-12 px-6 bg-gradient-to-r from-purple-400 to-blue-400 hover:from-purple-500 hover:to-blue-500 text-white">
+            Generate
+          </Button>
+        </div>
       </div>
     </div>
   );
