@@ -73,7 +73,12 @@ export class GitHubClient {
         head: endCommit,
       });
 
-      // If we get here, both commits exist
+      // Check if there are any commits between the points
+      if (response.data.commits.length === 0) {
+        throw new Error('No commits found between the specified points. Please ensure the commits are different and in the correct order.');
+      }
+
+      // If we get here, both commits exist and there are commits between them
       return response.data.commits.map((commit) => ({
         sha: commit.sha,
         message: commit.commit.message,
@@ -90,6 +95,10 @@ export class GitHubClient {
       }
       if (error.status === 403) {
         throw new Error('Rate limit exceeded. Please try again in a few minutes.');
+      }
+      // If it's our custom error about no commits, throw it directly
+      if (error.message.includes('No commits found between')) {
+        throw error;
       }
       console.error('Error fetching commits:', error);
       throw new Error('Failed to fetch commits from GitHub');
