@@ -21,15 +21,19 @@ export class GitHubClient {
   private octokit: Octokit;
   private static instance: GitHubClient;
 
-  private constructor(authToken: string) {
-    // Create Octokit instance with authentication
-    this.octokit = new Octokit({ auth: authToken });
+  private constructor() {
+    // Create Octokit instance with authentication from environment variable
+    const token = process.env.GITHUB_TOKEN;
+    if (!token) {
+      throw new Error('GitHub token not found in environment variables');
+    }
+    this.octokit = new Octokit({ auth: token });
   }
 
   // Singleton pattern to reuse the same Octokit instance
-  public static getInstance(authToken: string): GitHubClient {
-    if (!GitHubClient.instance || authToken) {
-      GitHubClient.instance = new GitHubClient(authToken);
+  public static getInstance(): GitHubClient {
+    if (!GitHubClient.instance) {
+      GitHubClient.instance = new GitHubClient();
     }
     return GitHubClient.instance;
   }

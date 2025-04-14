@@ -14,7 +14,6 @@ export default function Home() {
   const [repoUrl, setRepoUrl] = useState("");
   const [fromCommit, setFromCommit] = useState("");
   const [toCommit, setToCommit] = useState("");
-  const [authToken, setAuthToken] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [commits, setCommits] = useState<any[]>([]);
 
@@ -22,8 +21,7 @@ export default function Home() {
   const isFormValid = () => {
     return repoUrl.trim() !== "" && 
            fromCommit.trim() !== "" && 
-           toCommit.trim() !== "" && 
-           authToken.trim() !== "";
+           toCommit.trim() !== "";
   };
 
   const handleGenerate = async () => {
@@ -39,8 +37,8 @@ export default function Home() {
       // Parse repository URL
       const repoInfo = GitHubClient.parseRepositoryUrl(repoUrl);
 
-      // Get GitHub client instance with auth token
-      const githubClient = GitHubClient.getInstance(authToken);
+      // Get GitHub client instance
+      const githubClient = GitHubClient.getInstance();
 
       // Fetch commits (this will also validate the commits)
       const commitData = await githubClient.getCommitsBetween(
@@ -118,21 +116,6 @@ export default function Home() {
                   />
                   <div className="absolute right-2 top-1/2 -translate-y-1/2">
                     <InfoButton content="Enter the ending commit SHA or branch name (e.g., main, develop, or a commit hash)" />
-                  </div>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Input
-                    type="password"
-                    placeholder="GitHub Personal Access Token"
-                    className={`w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    disabled={isGenerating}
-                    value={authToken}
-                    onChange={(e) => setAuthToken(e.target.value)}
-                  />
-                  <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                    <InfoButton content="Add a GitHub Fine-grained Personal Access Token to access the API. Create one with 'Contents: Read-only' permission." />
                   </div>
                 </div>
                 <Button 
