@@ -1,4 +1,5 @@
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -10,12 +11,15 @@ export default function Home() {
         <p className="text-xl text-slate-300 mb-8">
           AI generated Github changelogs
         </p>
-        <div className="max-w-md mx-auto">
+        <div className="max-w-md mx-auto flex gap-2">
           <Input
             type="text"
-            placeholder="Enter your repository name..."
+            placeholder="enter your repository name"
             className="w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400"
           />
+          <Button className="h-12 px-6 bg-gradient-to-r from-purple-400 to-blue-400 hover:from-purple-500 hover:to-blue-500 text-white">
+            Generate
+          </Button>
         </div>
       </main>
     </div>
