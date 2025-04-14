@@ -27,16 +27,41 @@ export default function Home() {
            toCommit.trim() !== "";
   };
 
-  const handleGenerate = async () => {
+  const validateCommits = async () => {
     try {
-      setIsGenerating(true);
-      setError(null);
-      setFallbackUsed(false);
+      // Parse repository URL
+      const repoInfo = GitHubClient.parseRepositoryUrl(repoUrl);
+      const githubClient = GitHubClient.getInstance();
+      
+      // Validate both commits exist
+      await githubClient.getCommitsBetween(repoInfo, fromCommit, toCommit);
+      return true;
+    } catch (error: any) {
+      setError(error.message || "Failed to validate commits");
+      return false;
+    }
+  };
 
-      // Validate required fields
-      if (!isFormValid()) {
-        throw new Error("All fields are required");
+  const handleGenerate = async () => {
+    // Clear any previous errors
+    setError(null);
+    setFallbackUsed(false);
+
+    // Validate required fields first
+    if (!isFormValid()) {
+      setError("All fields are required");
+      return;
+    }
+
+    try {
+      // Validate commits before any UI changes
+      const isValid = await validateCommits();
+      if (!isValid) {
+        return; // Error already set by validateCommits
       }
+
+      // Only start animation after validation succeeds
+      setIsGenerating(true);
 
       // Call the changelog API
       const response = await fetch('/api/changelog', {
