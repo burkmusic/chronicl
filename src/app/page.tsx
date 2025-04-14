@@ -138,7 +138,7 @@ export default function Home() {
           </div>
 
           {/* Vertical Divider */}
-          <div className={`absolute left-1/2 top-[10vh] bottom-[10vh] w-[2px] bg-gradient-to-b from-purple-400 to-blue-400 transition-all ${isGenerating ? 'duration-1000 opacity-100' : 'duration-300 opacity-0'}`} />
+          <div className={`absolute left-1/2 top-[10vh] bottom-[10vh] w-[2px] bg-gradient-to-b from-purple-400 to-blue-400 transition-all pointer-events-none ${isGenerating ? 'duration-1000 opacity-100' : 'duration-300 opacity-0'}`} />
 
           {/* Right side - Results Card */}
           <div className={`transition-all duration-500 ease-in-out ${isGenerating ? 'w-1/2 opacity-100' : 'w-0 opacity-0'} px-4 py-8 flex flex-col justify-center`}>

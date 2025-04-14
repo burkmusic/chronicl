@@ -23,7 +23,7 @@ export class GitHubClient {
 
   private constructor() {
     // Create Octokit instance with authentication from environment variable
-    const token = process.env.GITHUB_TOKEN;
+    const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN || process.env.GITHUB_TOKEN;
     if (!token) {
       throw new Error('GitHub token not found in environment variables');
     }
