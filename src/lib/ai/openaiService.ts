@@ -65,9 +65,7 @@ export class OpenAIService {
             
             Format your response as a markdown document with the following structure:
             
-            # Changelog - Version ${version}
-            
-            ## Changes
+            # Version ${version}
             
             * [Concise summary of changes, grouped by type if possible]
             * [Another change]
