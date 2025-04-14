@@ -4,9 +4,46 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
+import { GitHubClient, RepositoryInfo } from "@/lib/github/githubClient";
 
 export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
+  const [repoUrl, setRepoUrl] = useState("");
+  const [fromCommit, setFromCommit] = useState("");
+  const [toCommit, setToCommit] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [commits, setCommits] = useState<any[]>([]);
+
+  const handleGenerate = async () => {
+    try {
+      setIsGenerating(true);
+      setError(null);
+
+      // Parse repository URL
+      const repoInfo = GitHubClient.parseRepositoryUrl(repoUrl);
+
+      // Get GitHub client instance
+      const githubClient = GitHubClient.getInstance();
+
+      // Fetch commits (this will also validate the commits)
+      const commitData = await githubClient.getCommitsBetween(
+        repoInfo,
+        fromCommit,
+        toCommit
+      );
+
+      setCommits(commitData);
+    } catch (err: any) {
+      setError(err.message || "An error occurred");
+      setIsGenerating(false);
+    }
+  };
+
+  const handleReset = () => {
+    setIsGenerating(false);
+    setError(null);
+    setCommits([]);
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 overflow-hidden">
@@ -28,6 +65,8 @@ export default function Home() {
                 placeholder="Enter your repository url..."
                 className={`w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
                 disabled={isGenerating}
+                value={repoUrl}
+                onChange={(e) => setRepoUrl(e.target.value)}
               />
             </div>
             <div className="flex gap-2">
@@ -36,12 +75,16 @@ export default function Home() {
                 placeholder="From commit..."
                 className={`w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
                 disabled={isGenerating}
+                value={fromCommit}
+                onChange={(e) => setFromCommit(e.target.value)}
               />
               <Input
                 type="text"
                 placeholder="To commit..."
                 className={`w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400 ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
                 disabled={isGenerating}
+                value={toCommit}
+                onChange={(e) => setToCommit(e.target.value)}
               />
               <Button 
                 className={`h-12 px-6 text-white ${
@@ -49,11 +92,16 @@ export default function Home() {
                     ? 'bg-gradient-to-r from-red-400 to-orange-400 hover:from-red-500 hover:to-orange-500'
                     : 'bg-gradient-to-r from-purple-400 to-blue-400 hover:from-purple-500 hover:to-blue-500'
                 }`}
-                onClick={() => setIsGenerating(!isGenerating)}
+                onClick={isGenerating ? handleReset : handleGenerate}
               >
                 {isGenerating ? 'Reset' : 'Generate'}
               </Button>
             </div>
+            {error && (
+              <div className="text-red-400 text-sm mt-2">
+                {error}
+              </div>
+            )}
           </div>
         </div>
 
@@ -67,11 +115,24 @@ export default function Home() {
               <CardTitle className="text-2xl">Generated Changelog</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="animate-pulse">
-                <div className="h-4 bg-slate-700 rounded w-3/4 mb-4"></div>
-                <div className="h-4 bg-slate-700 rounded w-1/2 mb-4"></div>
-                <div className="h-4 bg-slate-700 rounded w-5/6"></div>
-              </div>
+              {commits.length > 0 ? (
+                <div className="space-y-4">
+                  {commits.map((commit) => (
+                    <div key={commit.sha} className="border-b border-slate-700 pb-4">
+                      <div className="font-medium text-purple-400">{commit.message}</div>
+                      <div className="text-sm text-slate-400">
+                        by {commit.author.name} on {new Date(commit.author.date).toLocaleDateString()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="animate-pulse">
+                  <div className="h-4 bg-slate-700 rounded w-3/4 mb-4"></div>
+                  <div className="h-4 bg-slate-700 rounded w-1/2 mb-4"></div>
+                  <div className="h-4 bg-slate-700 rounded w-5/6"></div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
