@@ -64,9 +64,9 @@ export default function Home() {
   return (
     <TooltipPrimitive.Provider>
       <div className="min-h-screen flex items-center justify-center bg-slate-950 overflow-hidden">
-        <div className="w-full flex transition-all duration-700 ease-in-out relative">
+        <div className="w-full flex transition-all duration-700 ease-in-out relative h-screen">
           {/* Left side - Original UI */}
-          <div className={`transition-all duration-700 ease-in-out transform ${isGenerating ? 'w-1/2 translate-x-0' : 'w-full translate-x-0'}`}>
+          <div className={`transition-all duration-700 ease-in-out transform ${isGenerating ? 'w-1/2 translate-x-0' : 'w-full translate-x-0'} flex flex-col justify-center`}>
             <main className="max-w-3xl mx-auto px-4 py-8 text-center">
               <h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
                 Chronicl
@@ -156,7 +156,7 @@ export default function Home() {
           <div className={`absolute left-1/2 top-[10vh] bottom-[10vh] w-[2px] bg-gradient-to-b from-purple-400 to-blue-400 transition-all ${isGenerating ? 'duration-1000 opacity-100' : 'duration-300 opacity-0'}`} />
 
           {/* Right side - Results Card */}
-          <div className={`transition-all duration-500 ease-in-out ${isGenerating ? 'w-1/2 opacity-100' : 'w-0 opacity-0'} px-4 py-8`}>
+          <div className={`transition-all duration-500 ease-in-out ${isGenerating ? 'w-1/2 opacity-100' : 'w-0 opacity-0'} px-4 py-8 flex flex-col justify-center`}>
             <Card className="h-full bg-slate-900 border-slate-700 text-slate-100">
               <CardHeader>
                 <CardTitle className="text-2xl">Generated Changelog</CardTitle>
