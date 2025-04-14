@@ -15,7 +15,7 @@ export default function Home() {
       <div className="max-w-4xl w-full mx-auto px-4 flex gap-2 -mt-8">
         <Input
           type="text"
-          placeholder="enter your repository name"
+          placeholder="Enter your repository name..."
           className="w-full h-12 text-lg bg-slate-900 border-slate-700 text-slate-100 placeholder:text-slate-400"
         />
         <Button className="h-12 px-6 bg-gradient-to-r from-purple-400 to-blue-400 hover:from-purple-500 hover:to-blue-500 text-white">
