@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Chronicl - AI-Generated GitHub Changelogs
+
+Chronicl is a web application that generates beautiful changelogs from GitHub commit history. It uses AI to intelligently categorize and summarize commit messages.
+
+## Features
+
+- Generate changelogs from any GitHub repository
+- AI-powered commit message analysis and categorization
+- Beautiful, modern UI with a starry background
+- Fallback to simple keyword-based categorization when AI is not available
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+ and npm
+- GitHub API token (for accessing repositories)
+- OpenAI API key (optional, for AI-powered changelog generation)
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Create a `.env.local` file with your API keys:
+   ```
+   GITHUB_TOKEN=your_github_token_here
+   OPENAI_API_KEY=your_openai_api_key_here  # Optional
+   ```
+
+### Running the Application
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## How It Works
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Enter a GitHub repository URL and the commit range you want to analyze
+2. The application fetches the commits from GitHub
+3. If an OpenAI API key is provided, the commits are analyzed by AI to generate a structured changelog
+4. If no OpenAI API key is available, the application falls back to a simple keyword-based categorization
+5. The changelog is displayed in a beautiful UI, grouped by type (features, fixes, improvements, etc.)
 
-## Learn More
+## AI Changelog Generation
 
-To learn more about Next.js, take a look at the following resources:
+The AI-powered changelog generation:
+- Analyzes commit messages to understand their purpose and impact
+- Groups related commits together
+- Provides concise summaries of changes
+- Categorizes changes into features, fixes, improvements, breaking changes, and other
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+To enable AI features, simply add your OpenAI API key to the `.env.local` file.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Handling OpenAI Quota Limits
 
-## Deploy on Vercel
+If you encounter an error like "You exceeded your current quota, please check your plan and billing details", this means you've reached your OpenAI API usage limit. The application will automatically fall back to the simple keyword-based categorization method.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+To resolve this:
+1. Check your OpenAI account billing status at https://platform.openai.com/account/billing
+2. Add payment information to your account
+3. Or create a new API key with a different account
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The application will continue to work with the fallback method even without a valid OpenAI API key.
+
+## License
+
+MIT

@@ -8,6 +8,7 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { useState } from "react";
 import { GitHubClient, RepositoryInfo } from "@/lib/github/githubClient";
 import { StarryBackground } from "@/components/ui/starry-background";
+import { ChangelogSummary } from "@/lib/ai/changelogService";
 
 export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -15,7 +16,8 @@ export default function Home() {
   const [fromCommit, setFromCommit] = useState("");
   const [toCommit, setToCommit] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [commits, setCommits] = useState<any[]>([]);
+  const [changelog, setChangelog] = useState<ChangelogSummary | null>(null);
+  const [fallbackUsed, setFallbackUsed] = useState(false);
 
   // Add validation function
   const isFormValid = () => {
@@ -28,26 +30,38 @@ export default function Home() {
     try {
       setIsGenerating(true);
       setError(null);
+      setFallbackUsed(false);
 
       // Validate required fields
       if (!isFormValid()) {
         throw new Error("All fields are required");
       }
 
-      // Parse repository URL
-      const repoInfo = GitHubClient.parseRepositoryUrl(repoUrl);
+      // Call the changelog API
+      const response = await fetch('/api/changelog', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          repoUrl,
+          fromCommit,
+          toCommit,
+        }),
+      });
 
-      // Get GitHub client instance
-      const githubClient = GitHubClient.getInstance();
-
-      // Fetch commits (this will also validate the commits)
-      const commitData = await githubClient.getCommitsBetween(
-        repoInfo,
-        fromCommit,
-        toCommit
-      );
-
-      setCommits(commitData);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate changelog');
+      }
+      
+      // Check if fallback was used
+      if (data.fallbackUsed) {
+        setFallbackUsed(true);
+      }
+      
+      setChangelog(data);
     } catch (err: any) {
       setError(err.message || "An error occurred");
       setIsGenerating(false);
@@ -57,7 +71,8 @@ export default function Home() {
   const handleReset = () => {
     setIsGenerating(false);
     setError(null);
-    setCommits([]);
+    setChangelog(null);
+    setFallbackUsed(false);
   };
 
   return (
@@ -134,29 +149,51 @@ export default function Home() {
                   {error}
                 </div>
               )}
+              {fallbackUsed && (
+                <div className="text-amber-400 text-sm mt-2">
+                  OpenAI quota exceeded. Using simple categorization instead.
+                </div>
+              )}
             </div>
           </div>
 
           {/* Vertical Divider */}
           <div className={`absolute left-1/2 top-[10vh] bottom-[10vh] w-[2px] bg-gradient-to-b from-purple-400 to-blue-400 transition-all duration-700 pointer-events-none transform ${isGenerating ? 'translate-x-0 opacity-100' : 'translate-x-[100vw] opacity-0'}`} />
 
-          {/* Right side - Results Card */}
+          {/* Right side - Changelog Display */}
           <div className={`transition-all duration-700 ease-in-out ${isGenerating ? 'w-1/2 opacity-100' : 'w-0 opacity-0'} px-4 py-8 flex flex-col justify-center`}>
             <Card className="h-full bg-slate-900 border-slate-700 text-slate-100">
               <CardHeader>
                 <CardTitle className="text-2xl">Generated Changelog</CardTitle>
+                {changelog && (
+                  <div className="text-sm text-slate-400">
+                    Version {changelog.version} - {new Date(changelog.date).toLocaleDateString()}
+                    {changelog.aiGenerated && (
+                      <span className="ml-2 text-purple-400">AI-Generated</span>
+                    )}
+                  </div>
+                )}
               </CardHeader>
               <CardContent>
-                {commits.length > 0 ? (
-                  <div className="space-y-4">
-                    {commits.map((commit) => (
-                      <div key={commit.sha} className="border-b border-slate-700 pb-4">
-                        <div className="font-medium text-purple-400">{commit.message}</div>
-                        <div className="text-sm text-slate-400">
-                          by {commit.author.name} on {new Date(commit.author.date).toLocaleDateString()}
+                {changelog ? (
+                  <div className="space-y-6">
+                    {['feature', 'fix', 'improvement', 'breaking', 'other'].map((type) => {
+                      const entries = changelog.entries.filter(entry => entry.type === type);
+                      if (entries.length === 0) return null;
+
+                      return (
+                        <div key={type} className="space-y-2">
+                          <h3 className="text-lg font-semibold capitalize text-purple-400">{type}s</h3>
+                          <ul className="space-y-2">
+                            {entries.map((entry, index) => (
+                              <li key={index} className="text-slate-200">
+                                {entry.description}
+                              </li>
+                            ))}
+                          </ul>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="animate-pulse">
